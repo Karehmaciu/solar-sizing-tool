@@ -9,14 +9,19 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
   color: #333;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape on iOS */
+  text-size-adjust: 100%; /* Standard property, added for wider compatibility */
+  -webkit-tap-highlight-color: rgba(0,0,0,0); /* Remove tap highlight on mobile */
+  touch-action: manipulation; /* Prevent double-tap zoom */
 }
 
 /* Container */
 .container {
-  width: 90%;
+  width: 95%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 15px;
 }
 
 /* Header / Navbar */
@@ -35,20 +40,40 @@ header h1 {
 
 .navbar {
   background: #4CAF50;
-  text-align: center;
   padding: 10px 0;
   border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.navbar h1 {
+  margin: 0 10px;
+  font-size: 1.5em;
+  color: white;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .navbar a {
   color: #fff;
-  margin: 0 10px;
+  margin: 5px 10px;
   font-weight: 600;
   text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
 }
 
 .navbar a:hover {
-  text-decoration: underline;
+  background-color: rgba(255, 255, 255, 0.2);
+  text-decoration: none;
 }
 
 /* Documentation Section */
@@ -57,6 +82,8 @@ header h1 {
   border: 1px solid #ddd;
   padding: 15px;
   margin-bottom: 20px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .documentation h2 {
@@ -71,6 +98,8 @@ header h1 {
   border: 1px solid #ddd;
   padding: 15px;
   margin-bottom: 20px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .load-inputs h2 {
@@ -85,15 +114,50 @@ header h1 {
   table-layout: fixed;
 }
 
-.load-inputs th,
-.load-inputs td {
-  padding: 8px;
-  border: 1px solid #ddd;
-}
-
-.load-inputs th {
-  background-color: #f9f9f9;
-  font-weight: bold;
+/* Responsive tables for mobile */
+@media screen and (max-width: 768px) {
+  table.responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    /* -webkit-overflow-scrolling: touch; */ /* Removed due to limited browser support and to resolve warnings */
+  }
+  
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+    /* -webkit-overflow-scrolling: touch; */ /* Removed due to limited browser support and to resolve warnings */
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Add shadow for better visibility */
+  }
+  
+  /* Make tables stack on mobile */
+  table.stack-mobile tr {
+    display: block;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+  }
+  
+  table.stack-mobile th,
+  table.stack-mobile td {
+    display: block;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    word-break: break-word; /* Prevent text overflow */
+  }
+  
+  table.stack-mobile th {
+    background-color: #f0f0f0;
+  }
+  
+  /* Make all tables in the app responsive on mobile */
+  .load-inputs table,
+  .losses-params table,
+  .inverter-settings table {
+    width: 100%;
+    overflow-x: auto;
+    display: block;
+  }
 }
 
 /* Losses and Parameters Section */
@@ -102,6 +166,8 @@ header h1 {
   border: 1px solid #ddd;
   padding: 15px;
   margin-bottom: 20px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .losses-params h2 {
@@ -116,6 +182,8 @@ header h1 {
   border: 1px solid #ddd;
   padding: 15px;
   margin-bottom: 20px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .inverter-settings h2 {
@@ -127,80 +195,558 @@ header h1 {
 /* Form Inputs */
 input[type="text"],
 input[type="number"],
+input[type="email"],
 select {
   width: 100%;
-  padding: 8px;
+  padding: 12px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 16px; /* Minimum 16px to prevent zoom on iOS */
+  -webkit-appearance: none; /* For iOS compatibility, vendor prefix first */
+  appearance: none; /* Standard property, removes platform-native styling */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 input[type="text"]:focus,
 input[type="number"]:focus,
+input[type="email"]:focus,
 select:focus {
   border-color: #4CAF50;
   outline: none;
+  box-shadow: 0 0 3px rgba(76, 175, 80, 0.5);
 }
 
-/* Buttons */
-.calculate-btn,
-button,
-.back-button {
+/* Buttons and interactive elements */
+button, .button, .calculate-btn, .back-button {
+  display: inline-block;
   background-color: #4CAF50;
   color: white;
-  padding: 10px 20px;
   border: none;
+  padding: 12px 16px;
+  margin: 8px 0;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
   text-align: center;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  display: inline-block;
+  text-decoration: none;
+  transition: background-color 0.2s, transform 0.1s;
+  min-width: 44px; /* Minimum touch target size */
+  min-height: 44px; /* Minimum touch target size */
+  touch-action: manipulation; /* Optimize for touch */
 }
 
-.calculate-btn:hover,
-button:hover,
-.back-button:hover {
+button:hover, .button:hover, .calculate-btn:hover, .back-button:hover {
   background-color: #45a049;
 }
 
-.back-button {
-  text-decoration: none;
+button:active, .button:active, .calculate-btn:active, .back-button:active {
+  transform: scale(0.98); /* Small press effect */
 }
 
-/* Download/Share Section in Results */
-.download-share {
-  background: #fff;
-  border: 1px solid #ddd;
-  padding: 15px;
-  margin: 20px 0;
+/* Checkboxes and radio buttons - larger for touch */
+input[type="checkbox"], input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  vertical-align: middle;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 600px) {
-  .container {
-    width: 95%;
+label {
+  margin-bottom: 8px;
+  display: inline-block;
+  cursor: pointer; /* Show it's interactive */
+  padding: 2px 0; /* Slightly larger hit area */
+}
+
+/* Mobile Optimization */
+@media screen and (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
     padding: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
-
-  .load-inputs table,
-  .load-inputs th,
-  .load-inputs td,
-  table, th, td {
-    display: block;
+  
+  .navbar h1 {
+    margin-bottom: 10px;
+    font-size: 1.3em;
+  }
+  
+  .nav-links {
     width: 100%;
+    justify-content: space-around;
+    flex-wrap: wrap;
   }
-
-  .load-inputs th {
-    text-align: left;
+  
+  .nav-links a {
+    margin: 5px;
+    padding: 10px 12px; /* Larger touch targets */
+    flex-grow: 1;
+    text-align: center;
+    min-width: 80px; /* Ensure good touch target size */
   }
-
-  /* Reduce padding for sections on mobile */
-  .documentation, .load-inputs, .losses-params, .inverter-settings {
+  
+  .theme-switch-wrapper {
+    margin-top: 10px;
+  }
+  
+  .container {
+    width: 100%;
     padding: 10px;
   }
-
-  header h1 {
-    font-size: 1.4em;
+  
+  button, .button, .calculate-btn, .back-button {
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
   }
+  
+  /* Stacking sections on mobile */
+  .inline {
+    display: block !important;
+    width: 100% !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Larger text for readability */
+  body {
+    font-size: 16px;
+  }
+  
+  /* Larger form elements for touch */
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  select {
+    padding: 14px;
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+  
+  /* Better spacing for readability */
+  h1, h2, h3 {
+    margin-bottom: 15px;
+  }
+  
+  p {
+    margin-bottom: 12px;
+  }
+  
+  /* Fix spacing in sections */
+  .documentation, 
+  .load-inputs, 
+  .losses-params, 
+  .inverter-settings {
+    padding: 12px;
+    margin-bottom: 15px;
+  }
+  
+  /* Improve form layout on mobile */
+  label {
+    font-size: 16px;
+    margin-bottom: 6px;
+    display: block;
+  }
+  
+  /* Add visual feedback for touch interactions */
+  button:active, 
+  .button:active, 
+  .calculate-btn:active, 
+  .back-button:active,
+  input[type="checkbox"]:active,
+  input[type="radio"]:active,
+  a:active {
+    transform: scale(0.96);
+    transition: transform 0.1s;
+  }
+  
+  /* Ensure good spacing between interactive elements */
+  input[type="checkbox"], 
+  input[type="radio"] {
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+  
+  /* Improved mobile table scrolling */
+  .table-container {
+    position: relative;
+  }
+  
+  .table-container::after {
+    content: "⟺";
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    background: rgba(76, 175, 80, 0.8);
+    color: white;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    opacity: 0.8;
+    pointer-events: none;
+    animation: fadeOut 2s forwards 3s;
+  }
+  
+  @keyframes fadeOut {
+    to { opacity: 0; }
+  }
+  
+  /* Improve visibility of focused elements for accessibility */
+  :focus {
+    outline: 2px solid #4CAF50;
+    outline-offset: 2px;
+  }
+}
+
+/* Add tablet-specific optimizations */
+@media screen and (min-width: 601px) and (max-width: 1024px) {
+  .container {
+    width: 90%;
+    max-width: 800px;
+  }
+  
+  .nav-links a {
+    padding: 12px 15px;
+  }
+  
+  /* Better grid layout for tablets */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  /* Optimize chart sizes for tablets */
+  .chart-container {
+    height: 350px;
+    margin: 15px 0;
+  }
+  
+  /* Improve form element spacing */
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .form-row > div {
+    flex: 1 1 200px;
+  }
+}
+
+/* Landscape orientation optimizations */
+@media screen and (max-width: 1024px) and (orientation: landscape) {
+  body {
+    font-size: 14px;
+  }
+  
+  .container {
+    padding: 10px;
+  }
+  
+  /* Two-column layout in landscape */
+  .landscape-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .landscape-columns > div {
+    flex: 1 1 300px;
+  }
+  
+  /* Compact navigation */
+  .navbar {
+    padding: 8px 15px;
+  }
+  
+  .navbar h1 {
+    font-size: 1.2em;
+  }
+  
+  /* More compact form elements */
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  select {
+    padding: 8px 10px;
+  }
+  
+  button, .button, .calculate-btn, .back-button {
+    padding: 8px 12px;
+  }
+}
+
+/* High resolution mobile devices (retina) */
+@media screen and (max-width: 600px) and (-webkit-min-device-pixel-ratio: 2),
+       screen and (max-width: 600px) and (min-resolution: 192dpi) {
+  /* Ensure sharp images on high-DPI screens */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+  }
+  
+  /* Slightly larger touch targets for high-DPI screens */
+  button, 
+  .button, 
+  input[type="submit"],
+  select {
+    min-height: 48px;
+  }
+}
+
+/* Optimize for touch screens across all sizes */
+@media (hover: none) {
+  /* Make all interactive elements have proper touch-friendly size */
+  button,
+  .button,
+  a.nav-link,
+  .dropdown-item,
+  input[type="checkbox"] + label,
+  input[type="radio"] + label {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Add subtle feedback on touch */
+  .touch-feedback {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .touch-feedback::after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform 0.3s, opacity 0.5s;
+  }
+  
+  .touch-feedback:active::after {
+    transform: scale(0, 0);
+    opacity: 0.3;
+    transition: 0s;
+  }
+}
+
+/* Add optimization for landscape orientation on mobile */
+@media screen and (max-width: 900px) and (orientation: landscape) {
+  .container {
+    padding: 8px;
+  }
+  
+  .navbar {
+    padding: 5px;
+  }
+  
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  select {
+    padding: 10px;
+    margin-bottom: 8px;
+  }
+  
+  button, .button, .calculate-btn, .back-button {
+    padding: 10px;
+    margin: 5px 0;
+  }
+  
+  /* Better use of horizontal space in landscape */
+  .form-row-landscape {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .form-group-landscape {
+    flex: 1 0 45%;
+    padding: 0 5px;
+  }
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+  background-color: #121212; /* Consistent dark background for the body */
+  color: #e0e0e0; /* Consistent light text for the body */
+}
+
+body.dark-mode .container {
+  background-color: #1e1e1e; /* Slightly lighter dark background for containers */
+  color: #e0e0e0; /* Light text for containers */
+  border-color: #333; /* Consistent border color */
+}
+
+body.dark-mode .container p,
+body.dark-mode .container h2,
+body.dark-mode .container strong {
+  color: #e0e0e0;
+}
+
+body.dark-mode header {
+  background-color: #222; /* Darker background for header */
+  color: #f4f4f4; /* Light text for header */
+}
+
+body.dark-mode .navbar {
+  background-color: #2c2c2c; /* Dark background for navbar */
+  color: #f4f4f4; /* Light text for navbar */
+}
+
+body.dark-mode .navbar a {
+  color: #f4f4f4; /* Light text for navbar links */
+}
+
+body.dark-mode .navbar a:hover {
+  background-color: #444; /* Darker hover for navbar links */
+}
+
+body.dark-mode .card {
+  background-color: #2a2a2a; /* Dark background for cards */
+  border-color: #444; /* Darker border for cards */
+}
+
+body.dark-mode .form-group label {
+  color: #ccc; /* Lighter text for labels */
+}
+
+body.dark-mode input[type="text"],
+body.dark-mode input[type="number"],
+body.dark-mode input[type="email"],
+body.dark-mode input[type="password"],
+body.dark-mode textarea,
+body.dark-mode select {
+  background-color: #333; /* Dark background for inputs */
+  color: #f4f4f4; /* Light text for inputs */
+  border-color: #555; /* Darker border for inputs */
+}
+
+body.dark-mode input[type="text"]::placeholder,
+body.dark-mode input[type="number"]::placeholder,
+body.dark-mode input[type="email"]::placeholder,
+body.dark-mode input[type="password"]::placeholder,
+body.dark-mode textarea::placeholder {
+  color: #aaa; /* Lighter placeholder text */
+}
+
+body.dark-mode button,
+body.dark-mode .button,
+body.dark-mode .calculate-btn,
+body.dark-mode .back-button,
+body.dark-mode input[type="submit"] {
+  background-color: #4CAF50; /* Keep the button color consistent with light mode */
+  color: white;
+}
+
+body.dark-mode button:hover,
+body.dark-mode .button:hover,
+body.dark-mode .calculate-btn:hover,
+body.dark-mode .back-button:hover,
+body.dark-mode input[type="submit"]:hover {
+  background-color: #3d8b40; /* Slightly darker on hover for dark mode */
+}
+
+/* Loading indicator for slow connections */
+.loading {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.loading-spinner {
+  border: 5px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 5px solid #4CAF50;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Loading optimization for mobile */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.3s;
+}
+
+.loading-overlay.active {
+  visibility: visible;
+  opacity: 1;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(76, 175, 80, 0.3);
+  border-radius: 50%;
+  border-top-color: #4CAF50;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Print styles - for PDF downloads */
+@media print {
+  body {
+    background: white;
+    font-size: 12pt;
+  }
+  
+  .navbar, .controls, form button, .back-button {
+    display: none !important;
+  }
+  
+  .container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  a {
+    text-decoration: none;
+    color: #000;
+  }
+}
+
+/* Disable double tap zoom on iOS */
+* { 
+  touch-action: manipulation; 
 }

@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Solar Battery & Panel Calculator</title>
     <link
       rel="stylesheet"
@@ -50,15 +51,41 @@
         border: 1px solid #b2d8b2;
         margin-top: 1rem;
       }
+
+      /* Dark mode overrides for this page */
+      body.dark-mode h1,
+      body.dark-mode h2 {
+        color: #7fbf7f; /* Lighter green for dark mode */
+      }
+
+      body.dark-mode #resultsContainer {
+        background: #1a2a1a; /* Dark green background */
+        color: #e0e0e0; /* Light text for readability */
+        border-color: #3a5a3a; /* Darker border */
+      }
+
+      body.dark-mode fieldset {
+        border-color: #444;
+      }
+
+      body.dark-mode #resultsContainer strong {
+        color: #a0d0a0; /* Lighter green for headings in dark mode */
+      }
     </style>
   </head>
   <body>
     <nav class="navbar">
-      <!-- Added navbar for consistency -->
       <h1>Solar Component Customizer</h1>
       <div class="nav-links">
         <a href="/">Home</a>
         <a href="/readme">Documentation</a>
+        <div class="theme-switch-wrapper">
+          <label class="theme-switch" for="darkModeToggle">
+            <input type="checkbox" id="darkModeToggle" />
+            <div class="slider round"></div>
+          </label>
+          <span style="color: #fff; margin-left: 5px">Dark Mode</span>
+        </div>
       </div>
     </nav>
 
@@ -627,5 +654,6 @@
         window.location.href = mailtoLink;
       }
     </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
   </body>
 </html>

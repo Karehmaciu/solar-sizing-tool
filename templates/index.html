@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solar Sizing Tool - Home</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
     <script>
         function addLoadRow() {
             const table = document.getElementById('loadsTable');
@@ -25,12 +26,19 @@
         <div class="nav-links">
             <a href="/">Home</a>
             <a href="/readme">Documentation</a>
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="darkModeToggle">
+                    <input type="checkbox" id="darkModeToggle" />
+                    <div class="slider round"></div>
+                </label>
+                <span style="color: #fff; margin-left: 5px;">Dark Mode</span>
+            </div>
         </div>
     </nav>
     <div class="container">
         <h2>Load Inputs</h2>
         <form action="/" method="post">
-            <table id="loadsTable">
+            <table id="loadsTable" class="responsive stack-mobile">
                 <tr>
                     <th>Room</th>
                     <th>Load</th>
