@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Optimize form inputs for mobile
     const numberInputs = document.querySelectorAll('input[type="number"]');
+    /*
     numberInputs.forEach(input => {
         // Add step buttons for easier interaction on mobile
         const wrapper = document.createElement('div');
@@ -101,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             input.dispatchEvent(event);
         });
     });
+    */
     
     // Optimize tables for mobile with data-label attributes
     const responsiveTables = document.querySelectorAll('.responsive-table');

@@ -164,6 +164,18 @@ def home():
                 session['results']['tilt_warning_message'] = "Good tilt angle, optimal energy generation."
                 session['results']['tilt_warning_color'] = "green"
 
+            # Determine Effective Insolation warning
+            effective_insolation_value = session['results']['effective_insolation']
+            if effective_insolation_value < 2: # Low insolation
+                session['results']['effective_insolation_message'] = "Low effective insolation (< 2 kWh/m²/day), may require a significantly larger solar array."
+                session['results']['effective_insolation_color'] = "red"
+            elif effective_insolation_value < 4: # Moderate insolation
+                session['results']['effective_insolation_message'] = "Moderate effective insolation (2-4 kWh/m²/day)."
+                session['results']['effective_insolation_color'] = "amber"
+            else: # Good insolation
+                session['results']['effective_insolation_message'] = "Good effective insolation (>= 4 kWh/m²/day) for energy generation."
+                session['results']['effective_insolation_color'] = "green"
+
             return redirect(url_for('results'))
 
         except Exception as e:
