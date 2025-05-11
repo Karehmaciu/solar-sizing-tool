@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Sizing Tool - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script>
+        function addLoadRow() {
+            const table = document.getElementById('loadsTable');
+            const row = table.insertRow(-1);
+            row.innerHTML = `
+                <td><input type="text" name="room[]" placeholder="e.g. Classroom" required></td>
+                <td><input type="text" name="load[]" required></td>
+                <td><input type="number" name="qty[]" min="1" required></td>
+                <td><input type="number" name="power[]" min="1" required></td>
+                <td><input type="number" name="hours[]" min="0.1" step="0.1" required></td>
+            `;
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Solar Sizing Tool</h1>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/readme">Documentation</a>
+        </div>
+    </nav>
+    <div class="container">
+        <h2>Load Inputs</h2>
+        <form action="/" method="post">
+            <table id="loadsTable">
+                <tr>
+                    <th>Room</th>
+                    <th>Load</th>
+                    <th>Quantity</th>
+                    <th>Power (W)</th>
+                    <th>Daily Use (Hours)</th>
+                </tr>
+                {% set existing_rooms = inputs.get('room[]', []) %}
+                {% set existing_loads = inputs.get('load[]', []) %}
+                {% set existing_qtys = inputs.get('qty[]', []) %}
+                {% set existing_powers = inputs.get('power[]', []) %}
+                {% set existing_hours = inputs.get('hours[]', []) %}
+
+                {% if existing_rooms %}
+                    {% for i in range(existing_rooms|length) %}
+                    <tr>
+                        <td><input type="text" name="room[]" placeholder="e.g. Classroom"
+                            value="{{ existing_rooms[i] }}" required></td>
+                        <td><input type="text" name="load[]"
+                            value="{{ existing_loads[i] }}" required></td>
+                        <td><input type="number" name="qty[]" min="1"
+                            value="{{ existing_qtys[i] }}" required></td>
+                        <td><input type="number" name="power[]" min="1"
+                            value="{{ existing_powers[i] }}" required></td>
+                        <td><input type="number" name="hours[]" min="0.1" step="0.1"
+                            value="{{ existing_hours[i] }}" required></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td><input type="text" name="room[]" placeholder="e.g. Classroom" required></td>
+                        <td><input type="text" name="load[]" required></td>
+                        <td><input type="number" name="qty[]" min="1" required></td>
+                        <td><input type="number" name="power[]" min="1" required></td>
+                        <td><input type="number" name="hours[]" min="0.1" step="0.1" required></td>
+                    </tr>
+                {% endif %}
+            </table>
+            <button type="button" onclick="addLoadRow()">Add Load</button>
+
+            <h2>Losses and Parameters</h2>
+            <label>Losses (%):</label>
+            <input type="number" name="losses" 
+                   value="{{ inputs.get('losses', '') }}" required>
+
+            <label>Days of Autonomy:</label>
+            <input type="number" name="autonomy_days" min="1"
+                   value="{{ inputs.get('autonomy_days', '') }}" required>
+
+            <label>Battery Discharge Limit (%):</label>
+            <input type="number" name="discharge_limit"
+                   value="{{ inputs.get('discharge_limit', '') }}" required>
+
+            <label>Battery Efficiency (%):</label>
+            <input type="number" name="battery_efficiency"
+                   value="{{ inputs.get('battery_efficiency', '') }}" required>
+
+            <label>Solar Insolation (Hours):</label>
+            <input type="number" name="insolation"
+                   value="{{ inputs.get('insolation', '') }}" required>
+
+            <label>Tilt Angle (Degrees):</label>
+            <input type="number" name="tilt_angle"
+                   value="{{ inputs.get('tilt_angle', '') }}" required>
+
+            <h2>Inverter Settings</h2>
+            <label>Inverter Efficiency (%):</label>
+            <input type="number" name="inverter_efficiency"
+                   value="{{ inputs.get('inverter_efficiency', '') }}" required>
+
+            <label>Inverter Type:</label>
+            <select name="inverter_type" required>
+                <option value="Pure Sine Wave"
+                    {% if inputs.get('inverter_type','') == 'Pure Sine Wave' %}selected{% endif %}>
+                    Pure Sine Wave
+                </option>
+                <option value="Modified Sine Wave"
+                    {% if inputs.get('inverter_type','') == 'Modified Sine Wave' %}selected{% endif %}>
+                    Modified Sine Wave
+                </option>
+            </select>
+
+            <label>Inverter Surge Factor (e.g., 2 for double):</label>
+            <input type="number" step="0.1" name="surge_factor"
+                   value="{{ inputs.get('surge_factor', '') }}" required>
+
+            <h2>Module and Adjustment</h2>
+            <label>Adjustment Factor (e.g., 1.2 to 1.5):</label>
+            <input type="number" step="0.1" name="adjustment_factor"
+                   value="{{ inputs.get('adjustment_factor', '') }}" required>
+
+            <label>Module Power Rating (Wp):</label>
+            <input type="number" name="module_rating"
+                   value="{{ inputs.get('module_rating', '') }}" required>
+
+            <button type="submit">Calculate</button>
+        </form>
+    </div>
+</body>
+</html>

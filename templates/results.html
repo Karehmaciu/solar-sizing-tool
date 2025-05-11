@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Solar Sizing Tool - Results</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <nav class="navbar">
+      <h1>Solar Sizing Tool - Results</h1>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/readme">Documentation</a>
+      </div>
+    </nav>
+    <div class="container">
+      <h2>Your Calculations</h2>
+      <p>
+        <strong>Total Daily Energy (Wh):</strong> {{ results.total_energy }}
+      </p>
+      <p style="color: {{ results.tilt_warning_color }};">
+        <strong>Total Daily Energy with Losses (Wh):</strong> {{
+        results.total_energy_with_losses }}
+      </p>
+      <p><strong>System Voltage (V):</strong> {{ results.system_voltage }}</p>
+      <p>
+        <strong>Original Insolation (kWh/m²/day):</strong> {{ results.insolation
+        }}
+      </p>
+      <p style="color: {{ results.tilt_warning_color }};" title="{{ results.tilt_warning_message }}"><strong>Tilt Angle (°):</strong> {{ results.tilt_angle }}</p>
+      <p>
+        <strong>Tilt Correction Factor:</strong> {{
+        results.tilt_correction_factor }}
+      </p>
+      <p style="color: {{ results.tilt_warning_color }};">
+        <strong>Effective Insolation (kWh/m²/day):</strong> {{
+        results.effective_insolation }}
+      </p>
+      <p>
+        <strong>Battery Capacity (Ah) Required:</strong> {{
+        results.required_battery_capacity }}
+      </p>
+      <p>
+        <strong>Chosen Battery Capacity (Ah):</strong> {{
+        results.chosen_battery_capacity }}
+      </p>
+      <p><strong>Number of Modules:</strong> {{ results.num_modules }}</p>
+      <p><strong>Inverter Size (W):</strong> {{ results.inverter_size }}</p>
+      <p>
+        <strong>Charge Controller (A):</strong> {{
+        results.rounded_controller_current }}
+      </p>
+      <a href="{{ url_for('download_report') }}" class="calculate-btn"
+        >Download Report</a
+      >
+      <br />
+      <a
+        href="{{ url_for('customize_components_page', 
+                           required_ah=results.required_battery_capacity, 
+                           system_voltage=results.system_voltage,
+                           total_energy_with_losses=results.total_energy_with_losses,
+                           effective_insolation=results.effective_insolation,
+                           adjustment_factor=results.adjustment_factor) }}"
+        class="calculate-btn"
+        style="margin-top: 15px"
+        >Customize Battery & Panel Configuration</a
+      >
+      <br /><br />
+      <a href="/" class="back-button">Go Back</a>
+    </div>
+  </body>
+</html>

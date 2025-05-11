@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Solar Battery & Panel Calculator</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <!-- Link to existing stylesheet -->
+    <style>
+      /* Styles specific to this page, can be moved to styles.css later if preferred */
+      body {
+        max-width: 800px;
+        margin: 2rem auto;
+        line-height: 1.4;
+      } /* Adjusted for consistency */
+      h1,
+      h2 {
+        color: #006400;
+      } /* Consistent with provided style */
+      fieldset {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        border: 1px solid #ccc;
+      }
+      label {
+        display: block;
+        margin: 0.5rem 0 0.2rem;
+      }
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 0.4rem;
+        box-sizing: border-box; /* Added for better layout */
+      }
+      .inline {
+        display: inline-block;
+        width: 48%;
+        vertical-align: top;
+        margin-right: 2%;
+      }
+      .inline:last-child {
+        margin-right: 0;
+      }
+      /* button styling will be inherited from styles.css if .calculate-btn class is used, or can be defined here */
+      #resultsContainer {
+        background: #f0fff0;
+        padding: 1rem;
+        border: 1px solid #b2d8b2;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <!-- Added navbar for consistency -->
+      <h1>Solar Component Customizer</h1>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/readme">Documentation</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Added container for consistency -->
+      <h1>Solar Battery & Panel Calculator</h1>
+
+      <fieldset>
+        <legend>1. System & Battery Type</legend>
+        <label for="sysVolt">System Voltage (V)</label>
+        <select id="sysVolt">
+          <option value="12">12</option>
+          <option value="24">24</option>
+          <option value="48">48</option>
+        </select>
+
+        <label for="batType">Battery Type</label>
+        <select id="batType">
+          <option value="lithium">Lithium</option>
+          <option value="agm">AGM</option>
+          <option value="leadacid">Lead‑acid</option>
+        </select>
+
+        <label
+          ><input type="checkbox" id="overrideVals" /> Override recommended Eff
+          & DoD</label
+        >
+        <div class="inline">
+          <label for="eff">System Efficiency (%)</label>
+          <input type="number" id="eff" min="0" max="100" step="1" disabled />
+        </div>
+        <div class="inline">
+          <label for="dod">Depth of Discharge (%)</label>
+          <input type="number" id="dod" min="0" max="100" step="1" disabled />
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. Required Capacity</legend>
+        <div class="inline">
+          <label for="dailyWh">Daily Energy Need (Wh)</label>
+          <input type="number" id="dailyWh" placeholder="e.g. 10000" />
+          <label for="backupH"
+            >Days of Autonomy (Previously Backup Hours)</label
+          >
+          <!-- Changed label for clarity -->
+          <input type="number" id="backupH" placeholder="e.g. 1" />
+          <!-- Adjusted placeholder -->
+        </div>
+        <div class="inline">
+          <label>— OR —</label>
+          <label for="extAh"
+            >Required Battery Capacity (Ah) (from main calculator)</label
+          >
+          <input type="number" id="extAh" placeholder="e.g. 200" />
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. Battery Specs</legend>
+        <label for="batVolt">Individual Battery Voltage (V)</label>
+        <input type="number" id="batVolt" placeholder="e.g. 12" />
+        <label for="batAh">Individual Battery Capacity (Ah)</label>
+        <input type="number" id="batAh" placeholder="e.g. 100" />
+      </fieldset>
+
+      <fieldset>
+        <legend>4. Panel Specs & Configuration</legend>
+        <!-- Hidden fields to store values from main calculator -->
+        <input
+          type="hidden"
+          id="totalEnergyWithLosses"
+          value="{{ total_energy_with_losses if total_energy_with_losses else '0' }}"
+        />
+        <input
+          type="hidden"
+          id="effectiveInsolation"
+          value="{{ effective_insolation if effective_insolation else '0' }}"
+        />
+        <input
+          type="hidden"
+          id="adjustmentFactor"
+          value="{{ adjustment_factor if adjustment_factor else '1.2' }}"
+        />
+
+        <label for="panelW">Individual Panel Power (Wp)</label>
+        <input type="number" id="panelW" placeholder="e.g. 350" />
+        <label for="panelV">Individual Panel Voltage (Vmp)</label>
+        <input type="number" id="panelV" placeholder="e.g. 12" />
+      </fieldset>
+
+      <button onclick="calculate()" class="calculate-btn">
+        Calculate Configuration
+      </button>
+      <!-- Added class for styling -->
+      <button
+        id="downloadCustomizerReportBtn"
+        class="calculate-btn"
+        style="display: none; margin-top: 10px"
+      >
+        Download Customizer Report
+      </button>
+      <button
+        id="emailCustomizerResultsBtn"
+        class="calculate-btn"
+        style="display: none; margin-top: 10px"
+      >
+        Email Results
+      </button>
+
+      <div id="resultsContainer">
+        <!-- Results will be injected here by JavaScript -->
+      </div>
+      <br />
+      <a href="/" class="back-button">Back to Main Calculator</a>
+      <!-- Added back button -->
+    </div>
+
+    <script>
+      const recommended = {
+        lithium: { eff: 95, dod: 80 },
+        agm: { eff: 85, dod: 50 },
+        leadacid: { eff: 80, dod: 50 },
+      };
+
+      const batTypeEl = document.getElementById("batType");
+      const effEl = document.getElementById("eff");
+      const dodEl = document.getElementById("dod");
+      const override = document.getElementById("overrideVals");
+      const dailyWhEl = document.getElementById("dailyWh");
+      const backupHEl = document.getElementById("backupH");
+      const extAhEl = document.getElementById("extAh");
+      // Add hidden fields for panel calculation
+      const totalEnergyWithLossesEl = document.getElementById(
+        "totalEnergyWithLosses"
+      );
+      const effectiveInsolationEl = document.getElementById(
+        "effectiveInsolation"
+      );
+      const adjustmentFactorEl = document.getElementById("adjustmentFactor");
+
+      // Buttons for download and email
+      const downloadBtn = document.getElementById(
+        "downloadCustomizerReportBtn"
+      );
+      const emailBtn = document.getElementById("emailCustomizerResultsBtn");
+
+      function setRecs() {
+        const rec = recommended[batTypeEl.value];
+        effEl.value = rec.eff;
+        dodEl.value = rec.dod;
+        if (!override.checked) {
+          effEl.disabled = true;
+          dodEl.disabled = true;
+        }
+      }
+      batTypeEl.addEventListener("change", setRecs);
+      override.addEventListener("change", () => {
+        effEl.disabled = !override.checked;
+        dodEl.disabled = !override.checked;
+      });
+
+      // Function to handle input exclusivity for capacity
+      function handleCapacityInputs() {
+        if (extAhEl.value) {
+          dailyWhEl.disabled = true;
+          backupHEl.disabled = true;
+          dailyWhEl.value = "";
+          backupHEl.value = "";
+        } else {
+          dailyWhEl.disabled = false;
+          backupHEl.disabled = false;
+        }
+
+        if (dailyWhEl.value || backupHEl.value) {
+          extAhEl.disabled = true;
+        } else {
+          extAhEl.disabled = false;
+        }
+      }
+
+      extAhEl.addEventListener("input", handleCapacityInputs);
+      dailyWhEl.addEventListener("input", handleCapacityInputs);
+      backupHEl.addEventListener("input", handleCapacityInputs);
+
+      // Pre-fill extAh from URL query parameter
+      window.onload = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const requiredAhFromMain = urlParams.get("required_ah");
+        if (requiredAhFromMain) {
+          extAhEl.value = parseFloat(requiredAhFromMain).toFixed(2);
+          handleCapacityInputs(); // Disable other fields
+        }
+        const systemVoltageFromMain = urlParams.get("system_voltage");
+        if (systemVoltageFromMain) {
+          document.getElementById("sysVolt").value = systemVoltageFromMain;
+        }
+
+        // Values for hidden fields are now set by Jinja template rendering,
+        // but we can keep URL param retrieval as a fallback if needed,
+        // or if direct navigation to this page with params is desired without Jinja context.
+        if (
+          !totalEnergyWithLossesEl.value ||
+          totalEnergyWithLossesEl.value === "0"
+        ) {
+          totalEnergyWithLossesEl.value =
+            urlParams.get("total_energy_with_losses") || "0";
+        }
+        if (
+          !effectiveInsolationEl.value ||
+          effectiveInsolationEl.value === "0"
+        ) {
+          effectiveInsolationEl.value =
+            urlParams.get("effective_insolation") || "0";
+        }
+        if (!adjustmentFactorEl.value || adjustmentFactorEl.value === "1.2") {
+          // Check against default
+          adjustmentFactorEl.value =
+            urlParams.get("adjustment_factor") || "1.2";
+        }
+
+        setRecs(); // Initialize battery recommendations
+
+        // Attach event listeners for download and email buttons
+        downloadBtn.onclick = function () {
+          window.location.href =
+            "{{ url_for('download_customizer_report_route') }}";
+        };
+        emailBtn.onclick = shareCustomizerResultsByEmail; // Attach to the new email function
+      };
+
+      // Global variable to store results for sharing/downloading
+      let customizerResultsForSharing = {};
+
+      function calculate() {
+        // Gather inputs
+        const Vsys = +document.getElementById("sysVolt").value;
+        const eff = +effEl.value / 100;
+        const dod = +dodEl.value / 100;
+        const Wh = +dailyWhEl.value; // Use updated ID
+        const autonomyDays = +backupHEl.value; // Use updated ID, represents days of autonomy
+        const extAh = +extAhEl.value; // Use updated ID
+        const Vbat = +document.getElementById("batVolt").value;
+        const AhBat = +document.getElementById("batAh").value;
+
+        const Ppanel = +document.getElementById("panelW").value;
+        const Vpanel = +document.getElementById("panelV").value;
+
+        const total_energy_val = parseFloat(totalEnergyWithLossesEl.value);
+        const effective_insolation_val = parseFloat(
+          effectiveInsolationEl.value
+        );
+        const adjustment_factor_val = parseFloat(adjustmentFactorEl.value);
+
+        let resultsHTML = "";
+        customizerResultsForSharing = {}; // Reset on each calculation
+
+        // Input Validation
+        if (!Vsys) {
+          resultsHTML +=
+            "<p style='color:red;'>Error: System Voltage is required.</p>";
+        }
+        if (!eff || eff <= 0 || eff > 1) {
+          resultsHTML +=
+            "<p style='color:red;'>Error: System Efficiency must be between 1-100%.</p>";
+        }
+        if (!dod || dod <= 0 || dod > 1) {
+          resultsHTML +=
+            "<p style='color:red;'>Error: Depth of Discharge must be between 1-100%.</p>";
+        }
+        if (!Vbat) {
+          resultsHTML +=
+            "<p style='color:red;'>Error: Individual Battery Voltage is required.</p>";
+        }
+        if (!AhBat) {
+          resultsHTML +=
+            "<p style='color:red;'>Error: Individual Battery Capacity (Ah) is required.</p>";
+        }
+
+        // Panel spec validation: only require Ppanel and Vpanel if energy data is present for calculation
+        if (
+          total_energy_val > 0 &&
+          effective_insolation_val > 0 &&
+          (!Ppanel || Ppanel <= 0 || !Vpanel || Vpanel <= 0)
+        ) {
+          resultsHTML +=
+            "<p style='color:red;'>Error: To calculate custom panels, valid Individual Panel Power (Wp) and Panel Voltage (Vmp) are required.</p>";
+        }
+
+        // 1) Determine required Ah
+        let reqAh;
+        if (Wh > 0 && autonomyDays > 0) {
+          reqAh = (Wh * autonomyDays) / (Vsys * eff * dod);
+        } else if (extAh > 0) {
+          reqAh = extAh;
+        } else {
+          resultsHTML +=
+            "<p style='color:red;'>Error: Enter either Daily Energy Need + Days of Autonomy, OR Required Battery Capacity (Ah).</p>";
+        }
+
+        if (resultsHTML) {
+          // If there are errors, display them and stop
+          document.getElementById("resultsContainer").innerHTML = resultsHTML;
+          return;
+        }
+
+        if (!reqAh || reqAh <= 0) {
+          document.getElementById("resultsContainer").innerHTML =
+            "<p style='color:red;'>Error: Could not determine a valid Required Battery Capacity (Ah).</p>";
+          return;
+        }
+
+        // 2) Battery count & wiring
+        const battInSeries = Math.max(1, Math.ceil(Vsys / Vbat));
+        const numStringsParallel = Math.ceil(reqAh / (AhBat * dod)); // Corrected: Use DoD with nominal AhBat
+        const totalBattCount = battInSeries * numStringsParallel;
+
+        resultsHTML += `
+          <h2>Results</h2>
+          <p><strong>Required Total Battery Capacity:</strong> ${reqAh.toFixed(
+            1
+          )} Ah at ${Vsys}V</p>
+          <p><strong>Individual Battery Specs:</strong> ${Vbat}V, ${AhBat}Ah</p>
+          <p><strong>Batteries Needed:</strong> ${totalBattCount} units</p>
+          <p><strong>Wiring Configuration:</strong> ${numStringsParallel} parallel string(s), with each string having ${battInSeries} batteries in series.</p>
+          <br>
+        `;
+
+        // Store battery results for sharing/download
+        customizerResultsForSharing.Vsys = Vsys;
+        customizerResultsForSharing.batType =
+          document.getElementById("batType").value;
+        customizerResultsForSharing.effPercent = effEl.value; // Store as percentage string
+        customizerResultsForSharing.dodPercent = dodEl.value; // Store as percentage string
+        if (Wh > 0 && autonomyDays > 0) {
+          customizerResultsForSharing.Wh = Wh;
+          customizerResultsForSharing.autonomyDays = autonomyDays;
+        } else if (extAh > 0) {
+          customizerResultsForSharing.extAh = extAh;
+        }
+        customizerResultsForSharing.reqAh = reqAh.toFixed(1);
+        customizerResultsForSharing.Vbat = Vbat;
+        customizerResultsForSharing.AhBat = AhBat;
+        customizerResultsForSharing.totalBattCount = totalBattCount;
+        customizerResultsForSharing.numStringsParallel = numStringsParallel;
+        customizerResultsForSharing.battInSeries = battInSeries;
+
+        // 3) Panel Count & Wiring Calculation (New Logic)
+        let num_panels_custom = 0;
+        let array_size_wp = 0;
+        let panelCalcPerformed = false;
+
+        if (
+          total_energy_val > 0 &&
+          effective_insolation_val > 0 &&
+          Ppanel > 0 &&
+          adjustment_factor_val > 0
+        ) {
+          const panel_derating_factor = 0.8; // As used in main calculator
+          array_size_wp =
+            (total_energy_val /
+              (effective_insolation_val * panel_derating_factor)) *
+            adjustment_factor_val;
+          if (Ppanel > 0) {
+            num_panels_custom = Math.ceil(array_size_wp / Ppanel);
+            panelCalcPerformed = true;
+          } else {
+            resultsHTML +=
+              "<p style='color:red;'>Error: Individual Panel Power (Wp) must be greater than 0 to calculate panel count.</p>";
+          }
+        } else if (Ppanel > 0) {
+          resultsHTML +=
+            "<p>Panel number calculation skipped: Required energy data (Total Energy, Effective Insolation, Adjustment Factor) from the main calculator is missing or invalid.</p>";
+        }
+
+        if (panelCalcPerformed && num_panels_custom > 0 && Vpanel > 0) {
+          const panelsInSeries = Math.max(1, Math.round(Vsys / Vpanel));
+          const numPanelStringsParallel = Math.ceil(
+            num_panels_custom / panelsInSeries
+          );
+          const totalPanelsConfigured =
+            panelsInSeries * numPanelStringsParallel;
+
+          const totalActualPanelPower = totalPanelsConfigured * Ppanel; // Corrected: based on actual configured panels
+          const Icharge = totalActualPanelPower / Vsys;
+          const recCC = Icharge * 1.25;
+
+          resultsHTML += `
+            <p><strong>Calculated Total Array Size (Wp):</strong> ${array_size_wp.toFixed(
+              0
+            )} Wp</p>
+            <p><strong>Individual Panel Specs:</strong> ${Ppanel}Wp, ${Vpanel}Vmp</p>
+            <p><strong>Calculated Number of Panels Needed:</strong> ${num_panels_custom} (rounded up from ${(
+            array_size_wp / Ppanel
+          ).toFixed(2)})</p>
+            <p><strong>Panel Wiring Configuration:</strong> ${numPanelStringsParallel} parallel string(s), with each string having ${panelsInSeries} panels in series. (Total panels in this config: ${totalPanelsConfigured})</p>
+            <p><strong>Recommended Charge Controller Size:</strong> ${recCC.toFixed(
+              1
+            )} A (based on ${Icharge.toFixed(
+            1
+          )} A from ${totalPanelsConfigured} configured panels, with ~25% margin)</p>
+          `;
+
+          // Store panel results for sharing/download
+          customizerResultsForSharing.panelCalcPerformed = true;
+          customizerResultsForSharing.array_size_wp = array_size_wp.toFixed(0);
+          customizerResultsForSharing.Ppanel = Ppanel;
+          customizerResultsForSharing.Vpanel = Vpanel;
+          customizerResultsForSharing.num_panels_custom = num_panels_custom;
+          customizerResultsForSharing.raw_num_panels = (
+            array_size_wp / Ppanel
+          ).toFixed(2);
+          customizerResultsForSharing.panelsInSeries = panelsInSeries;
+          customizerResultsForSharing.numPanelStringsParallel =
+            numPanelStringsParallel;
+          customizerResultsForSharing.totalPanelsConfigured =
+            totalPanelsConfigured;
+          customizerResultsForSharing.totalActualPanelPower =
+            totalActualPanelPower.toFixed(0);
+          customizerResultsForSharing.recCC = recCC.toFixed(1);
+        } else if (!panelCalcPerformed && Ppanel > 0) {
+          // resultsHTML already has message about missing energy data
+          customizerResultsForSharing.panelCalcPerformed = false;
+        } else if (
+          !panelCalcPerformed &&
+          Ppanel <= 0 &&
+          total_energy_val > 0 &&
+          effective_insolation_val > 0
+        ) {
+          resultsHTML +=
+            "<p style='color:red;'>Error: Please enter Individual Panel Power (Wp) to calculate panel configuration.</p>";
+          customizerResultsForSharing.panelCalcPerformed = false;
+        } else {
+          resultsHTML +=
+            "<p>Panel and charge controller calculations skipped or incomplete due to missing inputs (e.g., Panel Power, Panel Voltage, or energy data from main calculator).</p>";
+          customizerResultsForSharing.panelCalcPerformed = false;
+        }
+
+        // Render results
+        document.getElementById("resultsContainer").innerHTML = resultsHTML;
+
+        // If no errors and reqAh is valid, proceed to save results and show buttons
+        if (!resultsHTML.includes("style='color:red;'") && reqAh > 0) {
+          fetch("/api/save_customizer_results", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(customizerResultsForSharing),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                downloadBtn.style.display = "inline-block";
+                emailBtn.style.display = "inline-block";
+              } else {
+                console.error("Error saving customizer results:", data.message);
+                // Optionally show an error to the user on the page
+                document.getElementById(
+                  "resultsContainer"
+                ).innerHTML += `<p style="color:red;">Error saving results for download: ${data.message}</p>`;
+              }
+            })
+            .catch((error) => {
+              console.error("Error saving results for download:", error);
+              document.getElementById(
+                "resultsContainer"
+              ).innerHTML += `<p style="color:red;">Network error saving results for download.</p>`;
+            });
+        } else {
+          downloadBtn.style.display = "none";
+          emailBtn.style.display = "none";
+        }
+      }
+
+      function shareCustomizerResultsByEmail() {
+        if (Object.keys(customizerResultsForSharing).length === 0) {
+          alert("Please calculate the results first before sharing.");
+          return;
+        }
+
+        const subject = "Solar Component Customizer Results";
+        let body =
+          "Here are the results from the Solar Component Customizer:\n\n";
+
+        body += "SYSTEM & BATTERY INPUTS:\n";
+        body += `System Voltage: ${
+          customizerResultsForSharing.Vsys || "N/A"
+        }V\n`;
+        body += `Battery Type: ${
+          customizerResultsForSharing.batType || "N/A"
+        }\n`;
+        body += `System Efficiency: ${
+          customizerResultsForSharing.effPercent || "N/A"
+        }%\n`;
+        body += `Depth of Discharge (DoD): ${
+          customizerResultsForSharing.dodPercent || "N/A"
+        }%\n`;
+        if (
+          customizerResultsForSharing.Wh &&
+          customizerResultsForSharing.autonomyDays
+        ) {
+          body += `Daily Energy Need: ${customizerResultsForSharing.Wh}Wh\n`;
+          body += `Days of Autonomy: ${customizerResultsForSharing.autonomyDays} days\n`;
+        } else if (customizerResultsForSharing.extAh) {
+          body += `Externally Provided Required Ah: ${customizerResultsForSharing.extAh}Ah\n`;
+        }
+        body += "\n";
+
+        body += "BATTERY BANK CONFIGURATION:\n";
+        body += `Required Total Battery Capacity: ${
+          customizerResultsForSharing.reqAh || "N/A"
+        } Ah at ${customizerResultsForSharing.Vsys || "N/A"}V\n`;
+        body += `Individual Battery: ${
+          customizerResultsForSharing.Vbat || "N/A"
+        }V, ${customizerResultsForSharing.AhBat || "N/A"}Ah (Nominal)\n`;
+        body += `Batteries Needed: ${
+          customizerResultsForSharing.totalBattCount || "N/A"
+        } units\n`;
+        body += `Wiring: ${
+          customizerResultsForSharing.numStringsParallel || "N/A"
+        } parallel string(s), each with ${
+          customizerResultsForSharing.battInSeries || "N/A"
+        } batteries in series.\n`;
+        body += "\n";
+
+        if (customizerResultsForSharing.panelCalcPerformed) {
+          body += "PV ARRAY & CHARGE CONTROLLER:\n";
+          body += `Calculated Total Array Size: ${
+            customizerResultsForSharing.array_size_wp || "N/A"
+          } Wp\n`;
+          body += `Individual Panel: ${
+            customizerResultsForSharing.Ppanel || "N/A"
+          }Wp, ${customizerResultsForSharing.Vpanel || "N/A"}Vmp\n`;
+          body += `Calculated Panels Needed: ${
+            customizerResultsForSharing.num_panels_custom || "N/A"
+          }`;
+          if (customizerResultsForSharing.raw_num_panels) {
+            body += ` (rounded up from ${customizerResultsForSharing.raw_num_panels})\n`;
+          } else {
+            body += `\n`;
+          }
+          body += `Panel Wiring: ${
+            customizerResultsForSharing.numPanelStringsParallel || "N/A"
+          } parallel string(s), each with ${
+            customizerResultsForSharing.panelsInSeries || "N/A"
+          } panels in series.\n`;
+          body += `Total Panels in Configuration: ${
+            customizerResultsForSharing.totalPanelsConfigured || "N/A"
+          }\n`;
+          body += `Recommended Charge Controller Size: ${
+            customizerResultsForSharing.recCC || "N/A"
+          } A\n`;
+          body += `(Based on total configured panel power of ${
+            customizerResultsForSharing.totalActualPanelPower || "N/A"
+          } Wp)\n`;
+        } else {
+          body += "PV ARRAY & CHARGE CONTROLLER:\n";
+          body +=
+            "Panel calculations were not performed or were incomplete due to missing inputs.\n";
+        }
+
+        const mailtoLink = `mailto:?subject=${encodeURIComponent(
+          subject
+        )}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailtoLink;
+      }
+    </script>
+  </body>
+</html>

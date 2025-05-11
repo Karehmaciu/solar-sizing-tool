@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Sizing Tool Documentation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Solar Sizing Tool Docs</h1>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/results">Results</a>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Solar Sizing Tool Documentation</h1>
+
+        <h2>Overview</h2>
+        <p>
+            The Solar Sizing Tool is a web-based application designed to help users determine the required components for an off-grid or grid-tied solar PV system. 
+            By entering load details, system parameters, and environmental factors, the tool calculates battery capacity, PV array size, inverter requirements, 
+            and charge controller specifications. The results are presented clearly, with options to export or share.
+        </p>
+
+        <h2>New Features and Improvements</h2>
+        <ul>
+            <li>Dynamic Input Interface</li>
+            <li>Automatic System Voltage Determination</li>
+            <li>Days of Autonomy and Tilt Angle</li>
+            <li>Inverter Settings (Efficiency & Type)</li>
+            <li>Module Efficiency Adjustment (80%)</li>
+            <li>Adjustment Factor for Real-World Conditions</li>
+            <li>Automatic Sizing for Modules, Inverters, and Charge Controllers</li>
+            <li>Exportable Results (Word Document)</li>
+            <li>Sharing Options (Facebook, Twitter, LinkedIn, WhatsApp, Email)</li>
+        </ul>
+
+        <h2>Diagram</h2>
+        <div class="diagram-container">
+            <img src="{{ url_for('static', filename='images/diagram.png') }}" alt="Solar System Diagram">
+            <p><em>A conceptual diagram of a typical solar PV system layout.</em></p>
+        </div>
+
+        <h2>Sample Inputs</h2>
+        <table>
+            <tr>
+                <th>Room</th>
+                <th>Load</th>
+                <th>Quantity</th>
+                <th>Power (W)</th>
+                <th>Daily Use (Hours)</th>
+            </tr>
+            <tr>
+                <td>Living Room</td>
+                <td>LED Light</td>
+                <td>4</td>
+                <td>10</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>Kitchen</td>
+                <td>Refrigerator</td>
+                <td>1</td>
+                <td>150</td>
+                <td>24</td>
+            </tr>
+            <tr>
+                <td>Bedroom</td>
+                <td>Fan</td>
+                <td>2</td>
+                <td>50</td>
+                <td>8</td>
+            </tr>
+        </table>
+
+        <h2>Other Inputs</h2>
+        <ul>
+            <li>Losses: 10%</li>
+            <li>System Voltage: 12V</li>
+            <li>Battery Discharge Limit: 50%</li>
+            <li>Battery Efficiency: 80%</li>
+            <li>Solar Insolation: 5 Peak Sun Hours</li>
+        </ul>
+
+        <h2>Step-by-Step Calculations (Sample Scenario)</h2>
+        <h3>1. Total Daily Energy Demand</h3>
+        <p><em>Energy (Wh) = Quantity × Power (W) × Daily Hours</em></p>
+        <ul>
+            <li>LED Lights: 4 × 10 W × 5 h = 200 Wh</li>
+            <li>Refrigerator: 1 × 150 W × 24 h = 3600 Wh</li>
+            <li>Fan: 2 × 50 W × 8 h = 800 Wh</li>
+        </ul>
+        <p><strong>Total Daily Energy Demand:</strong> 4600 Wh</p>
+
+        <h3>2. Energy Requirement with Losses</h3>
+        <p>Total Energy with Losses = 4600 Wh × (1 + 0.1) = 5060 Wh</p>
+
+        <h3>3. Required Battery Capacity</h3>
+        <p>
+            Required Capacity (Ah) = 5060 ÷ (12 × 0.5 × 0.8) ≈ 1054.17 Ah<br>
+            Chosen Battery Size: 6 × 200 Ah = 1200 Ah
+        </p>
+
+        <h3>4. Module Sizing</h3>
+        <p>
+            Total Module Size (Wp) = 5060 ÷ 5 = 1012 Wp<br>
+            Chosen Configuration: 6 modules of 200 Wp
+        </p>
+
+        <h3>5. Charge Controller Sizing</h3>
+        <p>
+            Controller Current = (1012 W ÷ 12 V) × 1.25 ≈ 106 A
+        </p>
+
+        <h2>Final Results (Sample Scenario)</h2>
+        <table>
+            <tr><th>Parameter</th><th>Value</th></tr>
+            <tr><td>Total Daily Energy Demand</td><td>4600 Wh</td></tr>
+            <tr><td>Energy Requirement with Losses</td><td>5060 Wh</td></tr>
+            <tr><td>Required Battery Capacity (Ah)</td><td>1054.17 Ah</td></tr>
+            <tr><td>Chosen Battery Configuration</td><td>6 batteries of 200 Ah</td></tr>
+            <tr><td>Total Required Module Size</td><td>1012 Wp</td></tr>
+            <tr><td>Chosen Module Configuration</td><td>6 modules of 200 Wp</td></tr>
+            <tr><td>Charge Controller Current</td><td>106 A</td></tr>
+        </table>
+
+        <p><strong>Notes:</strong>  
+        Batteries and modules are chosen based on nearest standard sizes. Actual wiring configurations may vary.  
+        Adjust tilt angle, days of autonomy, adjustment factor, and inverter parameters for more accurate results.  
+        Export results as a Word document and share via multiple platforms.</p>
+
+        <a class="back-button" href="/">Return to Home</a>
+    </div>
+</body>
+</html>

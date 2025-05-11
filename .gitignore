@@ -1,0 +1,28 @@
+# Environment variables
+.env
+
+# Virtual environment
+myenv/
+venv/
+*.venv
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS-specific files
+.DS_Store
+
+# IDE and editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Logs
+*.log

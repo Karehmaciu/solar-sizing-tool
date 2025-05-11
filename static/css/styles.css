@@ -1,0 +1,206 @@
+/* Basic Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+/* Container */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header / Navbar */
+header {
+  background-color: #4CAF50;
+  color: white;
+  padding: 15px 0;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.8em;
+}
+
+.navbar {
+  background: #4CAF50;
+  text-align: center;
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+}
+
+.navbar a {
+  color: #fff;
+  margin: 0 10px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+/* Documentation Section */
+.documentation {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.documentation h2 {
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+/* Load Inputs Section */
+.load-inputs {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.load-inputs h2 {
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+.load-inputs table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.load-inputs th,
+.load-inputs td {
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+.load-inputs th {
+  background-color: #f9f9f9;
+  font-weight: bold;
+}
+
+/* Losses and Parameters Section */
+.losses-params {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.losses-params h2 {
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+/* Inverter Settings Section */
+.inverter-settings {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.inverter-settings h2 {
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+/* Form Inputs */
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+  border-color: #4CAF50;
+  outline: none;
+}
+
+/* Buttons */
+.calculate-btn,
+button,
+.back-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.calculate-btn:hover,
+button:hover,
+.back-button:hover {
+  background-color: #45a049;
+}
+
+.back-button {
+  text-decoration: none;
+}
+
+/* Download/Share Section in Results */
+.download-share {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin: 20px 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .container {
+    width: 95%;
+    padding: 10px;
+  }
+
+  .load-inputs table,
+  .load-inputs th,
+  .load-inputs td,
+  table, th, td {
+    display: block;
+    width: 100%;
+  }
+
+  .load-inputs th {
+    text-align: left;
+  }
+
+  /* Reduce padding for sections on mobile */
+  .documentation, .load-inputs, .losses-params, .inverter-settings {
+    padding: 10px;
+  }
+
+  header h1 {
+    font-size: 1.4em;
+  }
+}
