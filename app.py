@@ -17,9 +17,9 @@ BATTERY_SIZES = [10, 20, 30, 40, 50, 65, 75, 100, 150, 200]
 def robots_txt():
     return send_file('static/robots.txt')
 
-@app.route('/favicon.ico')
-def favicon():
-    return send_file('static/favicon.ico', mimetype='image/vnd.microsoft.icon')
+# @app.route('/favicon.ico')  # Remove explicit favicon route
+# def favicon():
+#     return send_file('static/favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 # Determine system voltage based on daily energy demand
 def determine_system_voltage(daily_energy_demand):
