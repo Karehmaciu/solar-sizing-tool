@@ -8,6 +8,11 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/styles.css') }}"
     />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/fivicon.png') }}"
+      type="image/png"
+    />
     <style>
       /* Additional styles for results page */
       body.dark-mode .container p {
@@ -16,6 +21,10 @@
 
       body.dark-mode .container strong {
         color: #a0d0a0; /* Light green for emphasis in dark mode */
+      }
+
+      body.dark-mode .results-container .result-item {
+        color: #e0e0e0; /* Light grey for result values in dark mode */
       }
 
       /* Override warning colors to ensure visibility in dark mode */
@@ -119,5 +128,8 @@
       </div>
     </div>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <footer>
+      <p>&copy; Karemaciu 2025</p>
+    </footer>
   </body>
 </html>
