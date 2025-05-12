@@ -195,8 +195,7 @@ header h1 {
 /* Form Inputs */
 input[type="text"],
 input[type="number"],
-input[type="email"],
-select {
+input[type="email"] { /* Select removed from this rule */
   width: 100%;
   padding: 12px;
   margin-bottom: 15px;
@@ -208,10 +207,22 @@ select {
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+select { /* New rule specifically for select elements */
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px; /* Minimum 16px to prevent zoom on iOS */
+  background-color: #fff; /* Explicit background for light mode */
+  /* appearance: none; is NOT used here to allow native dropdown arrow */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Consistent shadow */
+}
+
 input[type="text"]:focus,
 input[type="number"]:focus,
 input[type="email"]:focus,
-select:focus {
+select:focus { /* Added select:focus for consistent focus styling */
   border-color: #4CAF50;
   outline: none;
   box-shadow: 0 0 3px rgba(76, 175, 80, 0.5);
@@ -626,11 +637,18 @@ body.dark-mode input[type="text"],
 body.dark-mode input[type="number"],
 body.dark-mode input[type="email"],
 body.dark-mode input[type="password"],
-body.dark-mode textarea,
-body.dark-mode select {
+body.dark-mode textarea { /* Select removed from this combined rule */
   background-color: #333; /* Dark background for inputs */
   color: #f4f4f4; /* Light text for inputs */
   border-color: #555; /* Darker border for inputs */
+}
+
+body.dark-mode select { /* Specific dark mode styles for select */
+  background-color: #333; /* Dark background for select */
+  color: #f4f4f4; /* Light text for select */
+  border-color: #555; /* Darker border for select */
+  /* Native dropdown arrow should adapt to dark mode based on browser.
+     If issues persist on specific browsers, 'color-scheme: dark;' can be considered. */
 }
 
 body.dark-mode input[type="text"]::placeholder,

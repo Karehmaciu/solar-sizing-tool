@@ -71,6 +71,15 @@
       body.dark-mode #resultsContainer strong {
         color: #a0d0a0; /* Lighter green for headings in dark mode */
       }
+
+      .label-highlight-green {
+        color: #006400; /* Dark green for light mode */
+        font-weight: bold;
+      }
+
+      body.dark-mode .label-highlight-green {
+        color: #a0d0a0; /* Lighter green for dark mode */
+      }
     </style>
   </head>
   <body>
@@ -137,7 +146,7 @@
         </div>
         <div class="inline">
           <label>— OR —</label>
-          <label for="extAh"
+          <label for="extAh" class="label-highlight-green"
             >Required Battery Capacity (Ah) (from main calculator)</label
           >
           <input type="number" id="extAh" placeholder="e.g. 200" />
