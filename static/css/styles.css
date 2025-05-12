@@ -792,10 +792,21 @@ body.dark-mode input[type="submit"]:hover {
   border-left: 4px solid #4CAF50;
 }
 
+body.dark-mode .result-item {
+  background-color: #2c2c2c; /* Dark background for result items */
+  color: #c0c0c0;             /* Silver text color for numbers in dark mode */
+  border-left-color: #7fbf7f; /* Lighter green default border for dark mode */
+}
+
 /* Warning color classes */
 .warning-red {
   color: #d32f2f; /* Red text */
   border-left: 4px solid #d32f2f !important; /* Red left border */
+}
+
+body.dark-mode .result-item.warning-red { /* Made selector more specific */
+  border-left-color: #ff8a8a !important; /* Lighter red border for dark mode */
+  /* Text color for warning-red items in dark mode is handled by an inline style in results.html */
 }
 
 .warning-amber {
@@ -803,9 +814,19 @@ body.dark-mode input[type="submit"]:hover {
   border-left: 4px solid #ff8f00 !important; /* Amber left border */
 }
 
+body.dark-mode .result-item.warning-amber { /* Made selector more specific */
+  border-left-color: #ffc57d !important; /* Lighter amber border for dark mode */
+  /* Text color for warning-amber items in dark mode is handled by an inline style in results.html */
+}
+
 .warning-green {
   color: #388e3c; /* Green text */
   border-left: 4px solid #388e3c !important; /* Green left border */
+}
+
+body.dark-mode .result-item.warning-green { /* Made selector more specific */
+  border-left-color: #81c784 !important; /* Lighter green border for dark mode */
+  /* Text color for warning-green items in dark mode is handled by an inline style in results.html */
 }
 
 /* Footer styles */
