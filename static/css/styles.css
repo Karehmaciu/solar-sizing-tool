@@ -676,6 +676,157 @@ body.dark-mode input[type="submit"]:hover {
   background-color: #3d8b40; /* Slightly darker on hover for dark mode */
 }
 
+body.dark-mode .container input[type="text"],
+body.dark-mode .container input[type="number"],
+body.dark-mode .container input[type="email"],
+body.dark-mode .container input[type="password"],
+body.dark-mode .container select {
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid #555;
+}
+
+/* Ensure result labels and values are visible in dark mode */
+body.dark-mode .results-section p {
+  color: #e0e0e0; /* General text color for paragraphs in results in dark mode */
+}
+
+body.dark-mode .results-section p strong {
+  color: #e8e8e8; /* Slightly brighter for labels */
+}
+
+/* This will apply to spans containing values or units within the results paragraphs.
+   Making it white for better contrast in dark mode for the specific indicators mentioned.
+   Warning color spans (.warning-red, .warning-orange, .info-blue) should have their own
+   more specific rules to override this if they are also within results-section p span. */
+body.dark-mode .results-section p span {
+  color: #ffffff; /* White color for values/spans in dark mode results */
+}
+
+/* Specifically target the warning/info spans if they have unique classes or structure */
+body.dark-mode .container .results-section p span.warning-red,
+body.dark-mode .container .results-section p span.warning-orange,
+body.dark-mode .container .results-section p span.info-blue {
+  /* Keep their specific colors, but ensure they are bright enough for dark mode if needed */
+  /* Example: if warning-red is normally dark red, make it a brighter red for dark mode */
+}
+
+body.dark-mode .results-section p span.warning-red {
+  color: #ff6b6b; /* Example: A brighter red for dark mode */
+}
+
+body.dark-mode .results-section p span.warning-orange {
+  color: #ffa07a; /* Example: A brighter orange for dark mode */
+}
+
+body.dark-mode .results-section p span.info-blue {
+  color: #add8e6; /* Example: A light blue for dark mode */
+}
+
+/* Style for the critical value in customize_components.html */
+.critical-value {
+  color: red !important; /* Make the text red */
+  font-weight: bold;
+}
+
+/* Ensure result values are visible in dark mode */
+body.dark-mode .container .results-section p strong,
+body.dark-mode .container .results-section p span {
+  color: #c0c0c0; /* Silver color for general result values in dark mode */
+}
+
+/* Specifically target the warning/info spans if they have unique classes or structure */
+body.dark-mode .container .results-section p span.warning-red,
+body.dark-mode .container .results-section p span.warning-orange,
+body.dark-mode .container .results-section p span.info-blue {
+  /* Keep their specific colors, but ensure they are bright enough for dark mode if needed */
+  /* Example: if warning-red is normally dark red, make it a brighter red for dark mode */
+}
+
+body.dark-mode .results-section p {
+  color: #e0e0e0; /* General text color for paragraphs in results in dark mode */
+}
+
+/* Ensure specific result values mentioned by user are clearly visible in dark mode */
+/* Assuming they are within a <p> and the value is in a <span> or directly after <strong> */
+/* Let's make their values a bit brighter or distinct if needed */
+body.dark-mode .results-section p:contains("Effective Insolation (kWh/m²/day):") span,
+body.dark-mode .results-section p:contains("Total Daily Energy with Losses (Wh):") span,
+body.dark-mode .results-section p:contains("Tilt Angle (°):") span {
+  color: #dcdcdc; /* A slightly brighter silver/light gray */
+}
+
+/* Results page specific styling */
+.results-container {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.result-item {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 4px;
+  border-left: 4px solid #4CAF50;
+}
+
+body.dark-mode .result-item {
+  background-color: #2c2c2c; /* Dark background for result items */
+  color: #c0c0c0;             /* Silver text color for numbers in dark mode */
+  border-left-color: #7fbf7f; /* Lighter green default border for dark mode */
+}
+
+/* Warning color classes */
+.warning-red {
+  color: #d32f2f; /* Red text */
+  border-left: 4px solid #d32f2f !important; /* Red left border */
+}
+
+body.dark-mode .result-item.warning-red { /* Made selector more specific */
+  border-left-color: #ff8a8a !important; /* Lighter red border for dark mode */
+  /* Text color for warning-red items in dark mode is handled by an inline style in results.html */
+}
+
+.warning-amber {
+  color: #ff8f00; /* Amber text */
+  border-left: 4px solid #ff8f00 !important; /* Amber left border */
+}
+
+body.dark-mode .result-item.warning-amber { /* Made selector more specific */
+  border-left-color: #ffc57d !important; /* Lighter amber border for dark mode */
+  /* Text color for warning-amber items in dark mode is handled by an inline style in results.html */
+}
+
+.warning-green {
+  color: #388e3c; /* Green text */
+  border-left: 4px solid #388e3c !important; /* Green left border */
+}
+
+body.dark-mode .result-item.warning-green { /* Made selector more specific */
+  border-left-color: #81c784 !important; /* Lighter green border for dark mode */
+  /* Text color for warning-green items in dark mode is handled by an inline style in results.html */
+}
+
+/* Footer styles */
+footer {
+    text-align: center;
+    padding: 1rem 0;
+    margin-top: 2rem;
+    font-style: italic;
+    font-size: 0.8rem;
+    color: #555;
+    border-top: 1px solid #eee;
+}
+
 /* Loading indicator for slow connections */
 .loading {
   display: none;
@@ -767,75 +918,4 @@ body.dark-mode input[type="submit"]:hover {
 /* Disable double tap zoom on iOS */
 * { 
   touch-action: manipulation; 
-}
-
-/* Results page specific styling */
-.results-container {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.result-item {
-  background-color: #f9f9f9;
-  padding: 10px;
-  border-radius: 4px;
-  border-left: 4px solid #4CAF50;
-}
-
-body.dark-mode .result-item {
-  background-color: #2c2c2c; /* Dark background for result items */
-  color: #c0c0c0;             /* Silver text color for numbers in dark mode */
-  border-left-color: #7fbf7f; /* Lighter green default border for dark mode */
-}
-
-/* Warning color classes */
-.warning-red {
-  color: #d32f2f; /* Red text */
-  border-left: 4px solid #d32f2f !important; /* Red left border */
-}
-
-body.dark-mode .result-item.warning-red { /* Made selector more specific */
-  border-left-color: #ff8a8a !important; /* Lighter red border for dark mode */
-  /* Text color for warning-red items in dark mode is handled by an inline style in results.html */
-}
-
-.warning-amber {
-  color: #ff8f00; /* Amber text */
-  border-left: 4px solid #ff8f00 !important; /* Amber left border */
-}
-
-body.dark-mode .result-item.warning-amber { /* Made selector more specific */
-  border-left-color: #ffc57d !important; /* Lighter amber border for dark mode */
-  /* Text color for warning-amber items in dark mode is handled by an inline style in results.html */
-}
-
-.warning-green {
-  color: #388e3c; /* Green text */
-  border-left: 4px solid #388e3c !important; /* Green left border */
-}
-
-body.dark-mode .result-item.warning-green { /* Made selector more specific */
-  border-left-color: #81c784 !important; /* Lighter green border for dark mode */
-  /* Text color for warning-green items in dark mode is handled by an inline style in results.html */
-}
-
-/* Footer styles */
-footer {
-    text-align: center;
-    padding: 1rem 0;
-    margin-top: 2rem;
-    font-style: italic;
-    font-size: 0.8rem;
-    color: #555;
-    border-top: 1px solid #eee;
 }
