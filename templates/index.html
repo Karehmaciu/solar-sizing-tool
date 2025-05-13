@@ -7,19 +7,6 @@
     <link rel="icon" href="{{ url_for('static', filename='images/fivicon.png') }}" type="image/png">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
-    <script>
-        function addLoadRow() {
-            const table = document.getElementById('loadsTable');
-            const row = table.insertRow(-1);
-            row.innerHTML = `
-                <td><input type="text" name="room[]" placeholder="e.g. Classroom" required></td>
-                <td><input type="text" name="load[]" required></td>
-                <td><input type="number" name="qty[]" min="1" required></td>
-                <td><input type="number" name="power[]" min="1" required></td>
-                <td><input type="number" name="hours[]" min="0.1" step="0.1" required></td>
-            `;
-        }
-    </script>
 </head>
 <body>
     <nav class="navbar">
@@ -38,7 +25,7 @@
     </nav>
     <div class="container">
         <h2>Load Inputs</h2>
-        <form action="/" method="post">
+        <form action="/" method="post" id="solarForm">
             <table id="loadsTable" class="responsive stack-mobile">
                 <tr>
                     <th>Room</th>
@@ -101,9 +88,28 @@
             <input type="number" name="insolation"
                    value="{{ inputs.get('insolation', '') }}" required>
 
-            <label>Tilt Angle (Degrees):</label>
-            <input type="number" name="tilt_angle"
-                   value="{{ inputs.get('tilt_angle', '') }}" required>
+            <label>Peak Sun Hours (Hours):</label>
+            <input type="number" step="0.01" id="peak_sun_hours" name="peak_sun_hours" value="4.5" required>
+
+            <label>Panel Angle (Degrees):</label>
+            <input type="number" step="1" id="tilt_angle" name="tilt_angle" value="30" required>
+
+            <!-- Tilt Angle Warning Modal -->
+            <div id="tiltWarningModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button">&times;</span>
+                    <h2>Panel Angle Warning</h2>
+                    <p id="warningText">The tilt angle (<span id="modalTiltValue"></span>°) is between 70° and 90°. This may be suboptimal. Please confirm you wish to proceed.</p>
+                    <label>
+                        <input type="checkbox" id="confirmProceed">
+                        <span id="confirmationMessage">I understand the implications of using a tilt angle of <span class="modal-tilt-value-inner"></span>° and wish to proceed.</span>
+                    </label>
+                    <button id="proceedButton">Proceed</button>
+                </div>
+            </div>
+
+            <label>System Losses (%):</label>
+            <input type="number" step="0.1" id="system_losses" name="system_losses" value="15" required>
 
             <h2>Inverter Settings</h2>
             <label>Inverter Efficiency (%):</label>
@@ -138,8 +144,82 @@
             <button type="submit">Calculate</button>
         </form>
     </div>
+
     <footer>
-        <p>&copy; Karemaciu 2025</p>
+        <p>&copy; 2024 Solar Sizing Tool. Created by Kareh Macius.</p>
     </footer>
+    <script>
+        const form = document.getElementById('solarForm');
+        const modal = document.getElementById('tiltWarningModal');
+        const confirmCheckbox = document.getElementById('confirmProceed');
+        const proceedButton = document.getElementById('proceedButton');
+        const closeButton = modal.querySelector('.close-button');
+        const tiltAngleInput = document.getElementById('tilt_angle');
+        let formSubmissionAllowed = false; // Flag to control submission after modal confirmation
+
+        form.addEventListener('submit', function(event) {
+            if (formSubmissionAllowed) { // If proceed button was clicked and allowed submission
+                formSubmissionAllowed = false; // Reset for next time
+                return; // Allow submission
+            }
+
+            const tiltAngle = parseFloat(tiltAngleInput.value);
+            const isWarningRange = (tiltAngle >= 60 && tiltAngle <= 360);
+
+            if (isWarningRange && !confirmCheckbox.checked) {
+                event.preventDefault();
+                document.getElementById('modalTiltValue').textContent = tiltAngle;
+                // Ensure the inner span for tilt value in confirmation message is also updated
+                const modalTiltValueInners = modal.querySelectorAll('.modal-tilt-value-inner');
+                modalTiltValueInners.forEach(span => span.textContent = tiltAngle);
+
+                document.getElementById('warningText').innerHTML = 'The tilt angle (<span class="modal-tilt-value-inner">' + tiltAngle + '</span>°) is between 60° and 360°. This may be suboptimal or physically impossible. Please confirm you wish to proceed or correct the value.';
+                document.getElementById('confirmationMessage').innerHTML = 'I understand the implications of using a tilt angle of <span class="modal-tilt-value-inner">' + tiltAngle + '</span>° and wish to proceed.';
+                modal.style.display = 'block';
+            } else {
+                // Covers:
+                // 1. Not in warning range (e.g. 0-59 degrees).
+                // 2. In warning range, BUT checkbox IS checked (e.g. user checked box, then hit Enter on form).
+                // In both cases, submission should proceed, and modal should be hidden.
+                modal.style.display = 'none';
+                // No event.preventDefault() means submission will proceed.
+            }
+        });
+
+        proceedButton.addEventListener('click', function() {
+            if (confirmCheckbox.checked) {
+                modal.style.display = 'none';
+                formSubmissionAllowed = true; // Set flag
+                form.requestSubmit(); // Programmatically submit the form, will go through the submit listener
+            } else {
+                alert('Please check the confirmation box to proceed.');
+            }
+        });
+
+        closeButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+            confirmCheckbox.checked = false; // Reset checkbox
+        });
+
+        // Close modal if user clicks outside of it
+        window.addEventListener('click', function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+                confirmCheckbox.checked = false; // Reset checkbox
+            }
+        });
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        });
+
+        // Apply saved dark mode preference on load
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 </body>
 </html>

@@ -270,6 +270,85 @@ label {
   padding: 2px 0; /* Slightly larger hit area */
 }
 
+/* Styles for the tilt angle warning modal */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  padding-top: 60px;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto; /* 5% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  max-width: 500px;
+  border-radius: 8px;
+  text-align: center;
+  position: relative;
+}
+
+body.dark-mode .modal-content {
+  background-color: #333;
+  color: #f1f1f1;
+  border-color: #555;
+}
+
+.modal-content .warning-icon {
+  font-size: 2.5em; /* Made icon larger */
+  color: red;
+  margin-bottom: 15px;
+}
+
+.modal-content .warning-text {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
+
+.modal-content p {
+    margin-bottom: 15px;
+}
+
+body.dark-mode .modal-content p {
+    color: #f1f1f1;
+}
+
+.modal-content label {
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-size: 0.9em;
+  text-align: left;
+  padding-left: 10px; /* Align with typical form inputs */
+}
+
+body.dark-mode .modal-content label {
+  color: #f1f1f1;
+}
+
+.modal-content input[type="checkbox"] {
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* Style for buttons inside the modal */
+.modal-content .calculate-btn,
+.modal-content .back-button {
+    padding: 10px 15px;
+    font-size: 0.9em;
+}
+
 /* Mobile Optimization */
 @media screen and (max-width: 600px) {
   .navbar {

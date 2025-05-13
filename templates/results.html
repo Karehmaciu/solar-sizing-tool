@@ -28,15 +28,18 @@
       }
 
       /* Override warning colors to ensure visibility in dark mode */
-      body.dark-mode .warning-red {
+      body.dark-mode .results-container .result-item.warning-red,
+      body.dark-mode .results-container .result-item.warning-red strong {
         color: #ff8a8a; /* Lighter red for dark mode */
       }
 
-      body.dark-mode .warning-amber {
+      body.dark-mode .results-container .result-item.warning-amber,
+      body.dark-mode .results-container .result-item.warning-amber strong {
         color: #ffc57d; /* Lighter amber for dark mode */
       }
 
-      body.dark-mode .warning-green {
+      body.dark-mode .results-container .result-item.warning-green,
+      body.dark-mode .results-container .result-item.warning-green strong {
         color: #81c784; /* Lighter green for dark mode */
       }
     </style>
@@ -63,8 +66,8 @@
           <strong>Total Daily Energy (Wh):</strong> {{ results.total_energy }}
         </div>
         <div class="result-item warning-{{ results.tilt_warning_color }}">
-          <strong>Total Daily Energy with Losses (Wh):</strong> <span>{{
-          results.total_energy_with_losses }}</span>
+          <strong>Total Daily Energy with Losses (Wh):</strong>
+          <span>{{ results.total_energy_with_losses }}</span>
         </div>
         <div class="result-item">
           <strong>System Voltage (V):</strong> {{ results.system_voltage }}
@@ -127,6 +130,7 @@
         <a href="/" class="back-button">Go Back</a>
       </div>
     </div>
+
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <footer>
       <p>&copy; Karemaciu 2025</p>
